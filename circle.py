@@ -7,6 +7,14 @@ ImageSize = 200
 MainImage = Image.new('RGB',[ImageSize,ImageSize],int('000000', 16))
 
 
+#ausgabetext = "Der Preis für 2 Socken beträgt 5 DM und 5 Paar kosten 10 DM"
+#print(ausgabetext)
+#ausgabetext = ausgabetext.replace("DM", "Euro")
+
+#ausgabetext = ausgabetext.replace("normal.jpg", "400x400.jpg")
+
+
+
 request.urlretrieve('https://pbs.twimg.com/profile_images/1484957634864287746/8ZsvSwVY_400x400.jpg','user.jpg')
 
 TWImage = Image.open('user.jpg').resize([64,64])
