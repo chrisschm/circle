@@ -2,32 +2,196 @@ from PIL import Image
 from urllib import request
 import os
 import requests
+import configparser
 
-ImageSize = 200
-
-MainImage = Image.new('RGB',[ImageSize,ImageSize],int('000000', 16))
-
-
-#ausgabetext = "Der Preis für 2 Socken beträgt 5 DM und 5 Paar kosten 10 DM"
-#print(ausgabetext)
-#ausgabetext = ausgabetext.replace("DM", "Euro")
-
-#ausgabetext = ausgabetext.replace("normal.jpg", "400x400.jpg")
+bearer_token = ''
+user_name = ''
+execution_time = ''
 
 
+def read_config():
+    config = configparser.ConfigParser()
+    config.read('circle.conf')
+    keys = [
+        "bearer_token",
+        "twitter_user_name",
+        "execution_time"
+    ]
+    for key in keys:
+        try:
+            value = config.get("SETTINGS", key)
+        except configparser.NoOptionError:
+            print(f"No option '{key}' in section 'SETTINGS'")
+            return False
+    
+    global bearer_token
+    bearer_token  = config.get("SETTINGS", "bearer_token")
+    global user_name
+    user_name  = config.get("SETTINGS", "twitter_user_name")
+    global execution_time
+    execution_time   = config.get("SETTINGS", "execution_time")
+    return True
 
-request.urlretrieve('https://pbs.twimg.com/profile_images/1484957634864287746/8ZsvSwVY_400x400.jpg','user.jpg')
 
-TWImage = Image.open('user.jpg').resize([64,64])
-BGImage = Image.open('bg.jpg').resize([64,64])
-MaskImage = Image.open('mask.png').resize([64,64])
-
-UserImage = Image.composite(TWImage,BGImage,MaskImage)
+def bearer_oauth(r):
+    r.headers["Authorization"] = f"Bearer {bearer_token}"
+    r.headers["User-Agent"] = "v2UserLookupPython"
+    return r
 
 
+def create_url():    
+    url = "https://api.twitter.com/2/users/by/username/{}?{}".format(user_name, 'user.fields=id,profile_image_url')
+    return url
 
-MainImage.paste(UserImage, (int((ImageSize - UserImage.height) / 2), int((ImageSize - UserImage.width) / 2)))
+
+def create_search_url(userid):    
+    url = "https://api.twitter.com/2/users/{}/mentions?max_results=100&expansions=author_id&user.fields=id,username,profile_image_url".format(userid)
+    return url
 
 
-MainImage.save('export/circle.jpg')
-os.remove('user.jpg')
+def connect_to_endpoint(url):
+    response = requests.request("GET", url, auth=bearer_oauth,)
+    if response.status_code != 200:
+        raise Exception(
+            "Request returned an error: {} {}".format(response.status_code, response.text)
+        )
+    return response
+
+
+def main():
+    if not read_config():
+        exit('Missing config variable')
+    ImageSize = 200
+
+    url = create_url()
+    response = connect_to_endpoint(url) 
+    json_response = response.json()    
+    userid = json_response['data']['id']
+    profile_image_url = json_response['data']['profile_image_url']
+    url = create_search_url(userid)
+    response = connect_to_endpoint(url) 
+    json_response = response.json()   
+
+    mention = {}
+    for dataset in json_response['data']:
+        if not dataset['author_id'] in mention:
+            mention[dataset['author_id']] = 1
+        else:
+            mention[dataset['author_id']] = mention[dataset['author_id']] + 1
+
+    sorted_mention = sorted(mention.items(), key=lambda kv: kv[1])
+    sorted_mention.reverse()
+
+    print(sorted_mention[0])
+    print(sorted_mention[1])
+    print(sorted_mention[2])
+    print(sorted_mention[3])
+    print(sorted_mention[4])
+    print(sorted_mention[5])
+    print(sorted_mention[6])
+    print(sorted_mention[7])
+
+    index = 1
+    for m in sorted_mention:
+        if index <= 8:
+            for u in json_response['includes']['users']:
+                if u['id']==m[0]:
+                    url = u['profile_image_url']
+                    url = url.replace("normal.jpg", "400x400.jpg")
+                    request.urlretrieve(url,'{}.jpg'.format(index))
+        index = index + 1
+        
+            
+        
+    MainImage = Image.new('RGB',[ImageSize,ImageSize],int('000000', 16))
+    profile_image_url = profile_image_url.replace("normal.jpg", "400x400.jpg")
+
+    request.urlretrieve(profile_image_url,'user.jpg')
+
+    TWImage = Image.open('user.jpg').resize([64,64])
+    BGImage = Image.open('bg.jpg').resize([64,64])
+    MaskImage = Image.open('mask.png').resize([64,64])
+
+    UserImage = Image.composite(TWImage,BGImage,MaskImage)
+
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2), int((ImageSize - UserImage.height) / 2)))
+    os.remove('user.jpg')
+
+    TWImage = Image.open('1.jpg').resize([48,48])
+    BGImage = Image.open('bg.jpg').resize([48,48])
+    MaskImage = Image.open('mask.png').resize([48,48])
+
+    UserImage = Image.composite(TWImage,BGImage,MaskImage)
+
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2), int((ImageSize - UserImage.height) / 2) - 64))
+    os.remove('1.jpg')
+
+    TWImage = Image.open('2.jpg').resize([48,48])
+    BGImage = Image.open('bg.jpg').resize([48,48])
+    MaskImage = Image.open('mask.png').resize([48,48])
+
+    UserImage = Image.composite(TWImage,BGImage,MaskImage)
+
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) + 50, int((ImageSize - UserImage.height) / 2) - 50))
+    os.remove('2.jpg')
+
+    TWImage = Image.open('3.jpg').resize([48,48])
+    BGImage = Image.open('bg.jpg').resize([48,48])
+    MaskImage = Image.open('mask.png').resize([48,48])
+
+    UserImage = Image.composite(TWImage,BGImage,MaskImage)
+
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) + 64, int((ImageSize - UserImage.height) / 2)))
+    os.remove('3.jpg')
+
+    TWImage = Image.open('4.jpg').resize([48,48])
+    BGImage = Image.open('bg.jpg').resize([48,48])
+    MaskImage = Image.open('mask.png').resize([48,48])
+
+    UserImage = Image.composite(TWImage,BGImage,MaskImage)
+
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) + 50, int((ImageSize - UserImage.height) / 2) + 50))
+    os.remove('4.jpg')
+
+    TWImage = Image.open('5.jpg').resize([48,48])
+    BGImage = Image.open('bg.jpg').resize([48,48])
+    MaskImage = Image.open('mask.png').resize([48,48])
+
+    UserImage = Image.composite(TWImage,BGImage,MaskImage)
+
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2), int((ImageSize - UserImage.height) / 2) + 64))
+    os.remove('5.jpg')
+
+    TWImage = Image.open('6.jpg').resize([48,48])
+    BGImage = Image.open('bg.jpg').resize([48,48])
+    MaskImage = Image.open('mask.png').resize([48,48])
+
+    UserImage = Image.composite(TWImage,BGImage,MaskImage)
+
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) - 50, int((ImageSize - UserImage.height) / 2) + 50))
+    os.remove('6.jpg')
+
+    TWImage = Image.open('7.jpg').resize([48,48])
+    BGImage = Image.open('bg.jpg').resize([48,48])
+    MaskImage = Image.open('mask.png').resize([48,48])
+
+    UserImage = Image.composite(TWImage,BGImage,MaskImage)
+
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) - 64, int((ImageSize - UserImage.height) / 2)))
+    os.remove('7.jpg')
+
+    TWImage = Image.open('8.jpg').resize([48,48])
+    BGImage = Image.open('bg.jpg').resize([48,48])
+    MaskImage = Image.open('mask.png').resize([48,48])
+
+    UserImage = Image.composite(TWImage,BGImage,MaskImage)
+
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) - 50, int((ImageSize - UserImage.height) / 2) - 50))
+    os.remove('8.jpg')
+
+    MainImage.save('export/circle.jpg')
+    
+
+
+if __name__ == "__main__":
+    main()
