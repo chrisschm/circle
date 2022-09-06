@@ -6,16 +6,13 @@ import configparser
 
 bearer_token = ''
 user_name = ''
-execution_time = ''
-
 
 def read_config():
     config = configparser.ConfigParser()
     config.read('circle.conf')
     keys = [
         "bearer_token",
-        "twitter_user_name",
-        "execution_time"
+        "twitter_user_name"
     ]
     for key in keys:
         try:
@@ -28,8 +25,6 @@ def read_config():
     bearer_token  = config.get("SETTINGS", "bearer_token")
     global user_name
     user_name  = config.get("SETTINGS", "twitter_user_name")
-    global execution_time
-    execution_time   = config.get("SETTINGS", "execution_time")
     return True
 
 
@@ -61,7 +56,7 @@ def connect_to_endpoint(url):
 def main():
     if not read_config():
         exit('Missing config variable')
-    ImageSize = 200
+    ImageSize = 400
 
     url = create_url()
     response = connect_to_endpoint(url) 
@@ -82,15 +77,6 @@ def main():
     sorted_mention = sorted(mention.items(), key=lambda kv: kv[1])
     sorted_mention.reverse()
 
-    print(sorted_mention[0])
-    print(sorted_mention[1])
-    print(sorted_mention[2])
-    print(sorted_mention[3])
-    print(sorted_mention[4])
-    print(sorted_mention[5])
-    print(sorted_mention[6])
-    print(sorted_mention[7])
-
     index = 1
     for m in sorted_mention:
         if index <= 8:
@@ -105,88 +91,68 @@ def main():
         
     MainImage = Image.new('RGB',[ImageSize,ImageSize],int('000000', 16))
     profile_image_url = profile_image_url.replace("normal.jpg", "400x400.jpg")
-
     request.urlretrieve(profile_image_url,'user.jpg')
-
-    TWImage = Image.open('user.jpg').resize([64,64])
-    BGImage = Image.open('bg.jpg').resize([64,64])
-    MaskImage = Image.open('mask.png').resize([64,64])
-
+    TWImage = Image.open('user.jpg').resize([128,128])
+    BGImage = Image.open('bg.jpg').resize([128,128])
+    MaskImage = Image.open('mask.png').resize([128,128])
     UserImage = Image.composite(TWImage,BGImage,MaskImage)
-
     MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2), int((ImageSize - UserImage.height) / 2)))
     os.remove('user.jpg')
 
-    TWImage = Image.open('1.jpg').resize([48,48])
-    BGImage = Image.open('bg.jpg').resize([48,48])
-    MaskImage = Image.open('mask.png').resize([48,48])
-
+    TWImage = Image.open('1.jpg').resize([80,80])
+    BGImage = Image.open('bg.jpg').resize([80,80])
+    MaskImage = Image.open('mask.png').resize([80,80])
     UserImage = Image.composite(TWImage,BGImage,MaskImage)
-
-    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2), int((ImageSize - UserImage.height) / 2) - 64))
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2), int((ImageSize - UserImage.height) / 2) - 128))
     os.remove('1.jpg')
 
-    TWImage = Image.open('2.jpg').resize([48,48])
-    BGImage = Image.open('bg.jpg').resize([48,48])
-    MaskImage = Image.open('mask.png').resize([48,48])
-
+    TWImage = Image.open('2.jpg').resize([80,80])
+    BGImage = Image.open('bg.jpg').resize([80,80])
+    MaskImage = Image.open('mask.png').resize([80,80])
     UserImage = Image.composite(TWImage,BGImage,MaskImage)
-
-    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) + 50, int((ImageSize - UserImage.height) / 2) - 50))
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) + 100, int((ImageSize - UserImage.height) / 2) - 100))
     os.remove('2.jpg')
 
-    TWImage = Image.open('3.jpg').resize([48,48])
-    BGImage = Image.open('bg.jpg').resize([48,48])
-    MaskImage = Image.open('mask.png').resize([48,48])
-
+    TWImage = Image.open('3.jpg').resize([80,80])
+    BGImage = Image.open('bg.jpg').resize([80,80])
+    MaskImage = Image.open('mask.png').resize([80,80])
     UserImage = Image.composite(TWImage,BGImage,MaskImage)
-
-    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) + 64, int((ImageSize - UserImage.height) / 2)))
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) + 128, int((ImageSize - UserImage.height) / 2)))
     os.remove('3.jpg')
 
-    TWImage = Image.open('4.jpg').resize([48,48])
-    BGImage = Image.open('bg.jpg').resize([48,48])
-    MaskImage = Image.open('mask.png').resize([48,48])
-
+    TWImage = Image.open('4.jpg').resize([80,80])
+    BGImage = Image.open('bg.jpg').resize([80,80])
+    MaskImage = Image.open('mask.png').resize([80,80])
     UserImage = Image.composite(TWImage,BGImage,MaskImage)
-
-    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) + 50, int((ImageSize - UserImage.height) / 2) + 50))
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) + 100, int((ImageSize - UserImage.height) / 2) + 100))
     os.remove('4.jpg')
 
-    TWImage = Image.open('5.jpg').resize([48,48])
-    BGImage = Image.open('bg.jpg').resize([48,48])
-    MaskImage = Image.open('mask.png').resize([48,48])
-
+    TWImage = Image.open('5.jpg').resize([80,80])
+    BGImage = Image.open('bg.jpg').resize([80,80])
+    MaskImage = Image.open('mask.png').resize([80,80])
     UserImage = Image.composite(TWImage,BGImage,MaskImage)
-
-    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2), int((ImageSize - UserImage.height) / 2) + 64))
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2), int((ImageSize - UserImage.height) / 2) + 128))
     os.remove('5.jpg')
 
-    TWImage = Image.open('6.jpg').resize([48,48])
-    BGImage = Image.open('bg.jpg').resize([48,48])
-    MaskImage = Image.open('mask.png').resize([48,48])
-
+    TWImage = Image.open('6.jpg').resize([80,80])
+    BGImage = Image.open('bg.jpg').resize([80,80])
+    MaskImage = Image.open('mask.png').resize([80,80])
     UserImage = Image.composite(TWImage,BGImage,MaskImage)
-
-    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) - 50, int((ImageSize - UserImage.height) / 2) + 50))
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) - 100, int((ImageSize - UserImage.height) / 2) + 100))
     os.remove('6.jpg')
 
-    TWImage = Image.open('7.jpg').resize([48,48])
-    BGImage = Image.open('bg.jpg').resize([48,48])
-    MaskImage = Image.open('mask.png').resize([48,48])
-
+    TWImage = Image.open('7.jpg').resize([80,80])
+    BGImage = Image.open('bg.jpg').resize([80,80])
+    MaskImage = Image.open('mask.png').resize([80,80])
     UserImage = Image.composite(TWImage,BGImage,MaskImage)
-
-    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) - 64, int((ImageSize - UserImage.height) / 2)))
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) - 128, int((ImageSize - UserImage.height) / 2)))
     os.remove('7.jpg')
 
-    TWImage = Image.open('8.jpg').resize([48,48])
-    BGImage = Image.open('bg.jpg').resize([48,48])
-    MaskImage = Image.open('mask.png').resize([48,48])
-
+    TWImage = Image.open('8.jpg').resize([80,80])
+    BGImage = Image.open('bg.jpg').resize([80,80])
+    MaskImage = Image.open('mask.png').resize([80,80])
     UserImage = Image.composite(TWImage,BGImage,MaskImage)
-
-    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) - 50, int((ImageSize - UserImage.height) / 2) - 50))
+    MainImage.paste(UserImage, (int((ImageSize - UserImage.width) / 2) - 100, int((ImageSize - UserImage.height) / 2) - 100))
     os.remove('8.jpg')
 
     MainImage.save('export/circle.jpg')
